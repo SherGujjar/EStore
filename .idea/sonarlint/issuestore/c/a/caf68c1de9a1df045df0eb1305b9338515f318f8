@@ -1,0 +1,8 @@
+
+Q
+java:S3740"/Provide the parametrized type for this generic.(¹­·´úÿÿÿÿ8ÕæëïÍ1
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ê…¼ò8×æëïÍ1
+Q
+java:S1128	"/Remove this unused import 'java.util.Optional'.(¨˜ëİüÿÿÿÿ8ßæëïÍ1
+V
+java:S1068"4Remove this unused "secondaryContext" private field.(¹­·´úÿÿÿÿ8ßæëïÍ1
