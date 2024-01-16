@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +24,9 @@ public class Product {
 
     private Double price;
 
+    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id",referencedColumnName = "id")
+    private Category category;
 
 
 }

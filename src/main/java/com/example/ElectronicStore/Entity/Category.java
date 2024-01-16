@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +26,6 @@ public class Category {
     @NotNull
     private String type;
 
+    @OneToMany(mappedBy = "category")
+    List<Product> products;
 }

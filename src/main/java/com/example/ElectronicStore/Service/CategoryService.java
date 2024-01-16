@@ -31,7 +31,7 @@ public class CategoryService {
         Sort sort=(sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()) :(Sort.by(sortBy).ascending());
         Pageable pageable = PageRequest.of(pageNo,pageSize,sort);
         Page<Category> allCategory = categoryRepository.findAll(pageable);
-        PageableResponse response = GenricPageableResponse.getPageableResponse(allCategory, CategoryDto.class);
+        PageableResponse<CategoryDto> response = GenricPageableResponse.getPageableResponse(allCategory, CategoryDto.class);
         return response;
 
     }
@@ -61,6 +61,11 @@ public class CategoryService {
     // create one
     public CategoryDto createCategory(Category category){
         return mapper.convertValue(categoryRepository.save(category),CategoryDto.class);
+    }
+
+    public CategoryDto getCategorybyId(Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(()->new RuntimeException("no such category id is preset"));
+        return mapper.convertValue(category,CategoryDto.class);
     }
 
 }
