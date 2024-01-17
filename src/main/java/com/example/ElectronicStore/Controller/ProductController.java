@@ -20,7 +20,7 @@ public class ProductController {
     }
 
     @GetMapping()
-    public PageableResponse<ProductDto> getAllProduct(@RequestParam(value ="pageNo",defaultValue = "0", required = false) int pageNo,@RequestParam(value ="pageNo",defaultValue = "0", required = false) int pageSize, @RequestParam(value ="pageNo",defaultValue = "0", required = false) String sortBy ,@RequestParam(value ="pageNo",defaultValue = "0", required = false) String sortDir){
+    public PageableResponse<ProductDto> getAllProduct(@RequestParam(value ="pageNo",defaultValue = "0", required = false) int pageNo,@RequestParam(value ="paseSize",defaultValue = "10", required = false) int pageSize, @RequestParam(value ="sortBy",defaultValue = "title", required = false) String sortBy ,@RequestParam(value ="pageDir",defaultValue = "aesc", required = false) String sortDir){
         return productService.getAllProducts(pageNo,pageSize,sortBy,sortDir);
     }
 

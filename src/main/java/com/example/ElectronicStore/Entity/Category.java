@@ -1,9 +1,12 @@
 package com.example.ElectronicStore.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +29,8 @@ public class Category {
     @NotNull
     private String type;
 
-    @OneToMany(mappedBy = "category")
-    List<Product> products;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 }

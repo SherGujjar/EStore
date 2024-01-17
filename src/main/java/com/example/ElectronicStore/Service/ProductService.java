@@ -44,7 +44,6 @@ public class ProductService {
     // update one
     public ProductDto updateProduct(Long id, ProductDto productDto){
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("No Such product id present in the database"));
-        product.setCategory(productDto.getCategory());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
         product.setTitle(productDto.getTitle());

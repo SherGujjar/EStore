@@ -15,7 +15,7 @@ public class GenricPageableResponse {
 
     public static <U,V> PageableResponse<V> getPageableResponse(Page<U> page,Class<V> type){
         List<U> entityList = page.getContent();
-        List<V> dtoList = entityList.stream().map(eachObject -> mapper.convertValue(eachObject, type)).collect(Collectors.toList());
+        List<V> dtoList = entityList.stream().map(eachObject->mapper.convertValue(eachObject, type)).collect(Collectors.toList());
         PageableResponse<V> response = new PageableResponse<>();
         response.setContent(dtoList);
         response.setPageNumber(page.getNumber());
