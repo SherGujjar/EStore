@@ -26,10 +26,9 @@ public class Product {
 
     private Double price;
 
-
-    @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id",referencedColumnName = "id")
+    @JsonBackReference()
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
     private Category category;
 
 }

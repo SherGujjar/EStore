@@ -2,6 +2,7 @@ package com.example.ElectronicStore.Dto;
 
 import com.example.ElectronicStore.Entity.Category;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;

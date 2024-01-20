@@ -52,4 +52,6 @@ public class CategoryController {
         CategoryDto categoryDto = categoryService.updateCategory(category,id);
         return new ResponseEntity<>(categoryDto,HttpStatus.ACCEPTED);
     }
+
+
 }

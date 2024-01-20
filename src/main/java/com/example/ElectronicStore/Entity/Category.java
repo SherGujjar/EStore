@@ -29,8 +29,7 @@ public class Category {
     @NotNull
     private String type;
 
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
+    @JsonManagedReference()
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Product> products = new ArrayList<>();
 }
