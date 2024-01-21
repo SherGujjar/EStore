@@ -1,5 +1,6 @@
 package com.example.ElectronicStore.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id",referencedColumnName = "id")
+    @JsonBackReference
     private Cart cart;
 
     private int quantity;

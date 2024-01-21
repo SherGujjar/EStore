@@ -1,5 +1,6 @@
 package com.example.ElectronicStore.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
@@ -27,6 +26,7 @@ public class Cart {
     private User user;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CartItem> cartItem = new ArrayList<>();
 
 
