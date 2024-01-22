@@ -5,6 +5,7 @@ import com.example.ElectronicStore.Entity.Cart;
 import com.example.ElectronicStore.Entity.CartItem;
 import com.example.ElectronicStore.Entity.Product;
 import com.example.ElectronicStore.Entity.User;
+import com.example.ElectronicStore.Repository.CartItemRepository;
 import com.example.ElectronicStore.Repository.CartRepository;
 import com.example.ElectronicStore.Repository.ProductRepository;
 import com.example.ElectronicStore.Repository.UserRepository;
@@ -12,7 +13,9 @@ import com.example.ElectronicStore.Utils.AddCartRequest;
 import com.example.ElectronicStore.Utils.NullUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,15 +30,20 @@ public class CartService {
 
     private CartRepository cartRepository;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private CartItemRepository cartItemRepository;
 
-    public CartService(UserRepository userRepository,ProductRepository productRepository,CartRepository cartRepository){
+    private ObjectMapper mapper = new ObjectMapper();;
+
+    public CartService(UserRepository userRepository,ProductRepository productRepository,CartRepository cartRepository,
+                       CartItemRepository cartItemRepository){
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     // add item to cart
+    @Transactional()
     public CartDto addItemToCart(Long userId, List<AddCartRequest> requestBody){
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No such user exist in the db"));
         Cart cart = cartRepository.findByUser(user);
@@ -86,7 +94,22 @@ public class CartService {
                     cart.setAmount(cart.getAmount()+eachCart.getQty()*productInfo.getPrice());
                 }
             });
+
+
+            // delete item if the quantity of any item reduced to zero;
+            Iterator<CartItem> iterator = cart.getCartItem().iterator();
+            while (iterator.hasNext()) {
+                CartItem eachCartItem = iterator.next();
+                if (eachCartItem.getQuantity() == 0) {
+                    iterator.remove(); // Safely remove the element using the iterator
+                }
+            }
+//            cart.setCartItem(cart.getCartItem().stream().filter(eachCartItem->{
+//                return eachCartItem.getQuantity()!=0;
+//            }).collect(Collectors.toList()));
+
             Cart cartSaved = cartRepository.save(cart);
+            cartRepository.flush();
             return mapper.convertValue(cartSaved,CartDto.class);
         }
     }

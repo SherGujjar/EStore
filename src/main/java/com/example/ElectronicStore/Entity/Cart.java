@@ -25,7 +25,7 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
     private List<CartItem> cartItem = new ArrayList<>();
 
