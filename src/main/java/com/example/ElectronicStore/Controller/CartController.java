@@ -3,13 +3,11 @@ package com.example.ElectronicStore.Controller;
 import com.example.ElectronicStore.Dto.CartDto;
 import com.example.ElectronicStore.Service.CartService;
 import com.example.ElectronicStore.Utils.AddCartRequest;
+import com.example.ElectronicStore.Utils.ApiResponseMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +27,17 @@ public class CartController {
         CartDto cartDto = cartService.addItemToCart(userId, cartBody);
         return new ResponseEntity<>(cartDto, HttpStatus.CREATED);
 
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ApiResponseMessage> deleteCart(@RequestParam Long cartId){
+        ApiResponseMessage apiResponseMessage = cartService.deleteCart(cartId);
+        return new ResponseEntity<>(apiResponseMessage,HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<CartDto> deleteItemFromCart(@RequestParam Long cartId, @RequestParam List<Long> productIds){
+        CartDto response = cartService.deleteItemFromCart(cartId,productIds);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

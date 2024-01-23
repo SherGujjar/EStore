@@ -10,8 +10,10 @@ import com.example.ElectronicStore.Repository.CartRepository;
 import com.example.ElectronicStore.Repository.ProductRepository;
 import com.example.ElectronicStore.Repository.UserRepository;
 import com.example.ElectronicStore.Utils.AddCartRequest;
+import com.example.ElectronicStore.Utils.ApiResponseMessage;
 import com.example.ElectronicStore.Utils.NullUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,8 +96,6 @@ public class CartService {
                     cart.setAmount(cart.getAmount()+eachCart.getQty()*productInfo.getPrice());
                 }
             });
-
-
             // delete item if the quantity of any item reduced to zero;
             Iterator<CartItem> iterator = cart.getCartItem().iterator();
             while (iterator.hasNext()) {
@@ -104,10 +104,6 @@ public class CartService {
                     iterator.remove(); // Safely remove the element using the iterator
                 }
             }
-//            cart.setCartItem(cart.getCartItem().stream().filter(eachCartItem->{
-//                return eachCartItem.getQuantity()!=0;
-//            }).collect(Collectors.toList()));
-
             Cart cartSaved = cartRepository.save(cart);
             cartRepository.flush();
             return mapper.convertValue(cartSaved,CartDto.class);
@@ -121,5 +117,38 @@ public class CartService {
     // remove item from the cart
 
     // delete all item from the cart
+    public ApiResponseMessage deleteCart(Long cartId){
+        Cart cartDb = cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("No such cart id exist"));
+        cartRepository.delete(cartDb);
+        return  ApiResponseMessage.builder().message("Cart Deleted Successfully").status(HttpStatus.OK).success(true).build();
+    }
+
+    @Transactional()
+    public CartDto deleteItemFromCart(Long cartId, List<Long> productIds){
+        Cart cartDb = cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("No such cart id exist"));
+        AtomicInteger qtyToRemove = new AtomicInteger(0);
+        AtomicReference<Double> priceToSubTract = new AtomicReference<>(0.0);
+        productIds.forEach(eachId->{
+            Product productInfo = productRepository.findById(eachId).orElseThrow(() -> new RuntimeException("No such product present"));
+            Iterator<CartItem> cartIterator = cartDb.getCartItem().iterator();
+            while(cartIterator.hasNext()){
+                CartItem cartItem = cartIterator.next();
+                Long cartIdToDelete = cartItem.getCart().getId();
+                Long productIdToDelete = cartItem.getProduct().getId();
+                if(cartIdToDelete==cartId && eachId==productIdToDelete){
+                    qtyToRemove.addAndGet(1);
+                    priceToSubTract.accumulateAndGet(productInfo.getPrice()*cartItem.getQuantity(),(a,b)->a+b);
+                    cartIterator.remove();
+                }
+            }
+        });
+        int newQty = cartDb.getTotalQuantity()-qtyToRemove.get();
+        double newPrice = cartDb.getAmount()-priceToSubTract.get();
+        cartDb.setTotalQuantity(newQty);
+        cartDb.setAmount(newPrice);
+        Cart cartSaved = cartRepository.save(cartDb);
+        cartRepository.flush();
+        return mapper.convertValue(cartSaved,CartDto.class);
+    }
 
 }
