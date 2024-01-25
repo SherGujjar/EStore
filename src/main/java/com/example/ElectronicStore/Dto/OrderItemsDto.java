@@ -2,6 +2,7 @@ package com.example.ElectronicStore.Dto;
 
 import com.example.ElectronicStore.Entity.Orders;
 import com.example.ElectronicStore.Entity.Product;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.validation.constraints.NotNull;
 
 public class OrderItemsDto {
@@ -14,6 +15,5 @@ public class OrderItemsDto {
     @NotNull
     private Product product;
 
-    @NotNull
-    private Orders orders;
+    private OrderDto orderDto;
 }

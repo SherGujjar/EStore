@@ -1,5 +1,6 @@
 package com.example.ElectronicStore.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,8 @@ public class Orders {
 
     private String billingAddress;
 
+    private String billingName;
+
     private Integer totalQuantity;
 
     private Double totalPrice;
@@ -36,6 +39,7 @@ public class Orders {
     private User user;
 
     @OneToMany(mappedBy = "orders",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference()
     List<OrderItems> orderItemsList = new ArrayList<>();
 
 

@@ -1,6 +1,8 @@
 package com.example.ElectronicStore.Dto;
 
+import com.example.ElectronicStore.Entity.OrderItems;
 import com.example.ElectronicStore.Entity.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,8 @@ public class OrderDto {
 
     private String billingAddress;
 
+    private String billingName;
+
     private Integer totalQuantity;
 
     private Double totalPrice;
@@ -28,5 +32,5 @@ public class OrderDto {
 
     private User user;
 
-    List<OrderItemsDto> orderItemsList = new ArrayList<>();
+    List<OrderItems> orderItemsList = new ArrayList<>();
 }
