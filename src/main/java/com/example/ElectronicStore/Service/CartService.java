@@ -151,4 +151,9 @@ public class CartService {
         return mapper.convertValue(cartSaved,CartDto.class);
     }
 
+    public List<CartItem> getAllCartItem(Long cartId){
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+        return cartItems;
+    }
+
 }
