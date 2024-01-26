@@ -3,10 +3,7 @@ package com.example.ElectronicStore.Service;
 import com.example.ElectronicStore.Dto.UserDto;
 import com.example.ElectronicStore.Entity.User;
 import com.example.ElectronicStore.Repository.UserRepository;
-import com.example.ElectronicStore.Utils.ApiResponseMessage;
-import com.example.ElectronicStore.Utils.GenricPageableResponse;
-import com.example.ElectronicStore.Utils.PageableResponse;
-import com.example.ElectronicStore.Utils.SpringContext;
+import com.example.ElectronicStore.Utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.SpringProperties;
@@ -16,10 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +28,20 @@ public class UserService {
 
     private UserRepository userRepository;
 
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository,AuthenticationManager authenticationManager,JwtService jwtService){
         this.userRepository  = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public UserDto createUser(User user){
+        user.setPassword(enCryptPassword(user.getPassword()));
         return mapper.convertValue(userRepository.save(user),UserDto.class);
     }
 
@@ -59,6 +67,20 @@ public class UserService {
         Page<User> page = userRepository.findAll(pageable);
         PageableResponse<UserDto> response = GenricPageableResponse.getPageableResponse(page, UserDto.class);
         return response;
+    }
+
+    private String enCryptPassword(String password){
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder.encode(password);
+    }
+
+    public AuthResponse authenticate(LoginRequestBody lrb){
+        String email = lrb.getEmail();
+        String password = lrb.getPassword();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
+        UserDto user = this.getUserByEmail(email);
+        String token =  jwtService.generateToken(user);
+        return new AuthResponse(user,token);
     }
 
 
