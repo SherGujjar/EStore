@@ -10,6 +10,7 @@ import com.example.ElectronicStore.Utils.PageableResponse;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,12 +32,14 @@ public class ProductController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductDto> createProduct(@RequestBody Product product){
         ProductDto productDto = productService.createNewProduct(product);
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ApiResponseMessage> deleteProduct(@RequestParam Long id){
         ApiResponseMessage response = productService.deleteProduct(id);
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -49,12 +52,14 @@ public class ProductController {
     }
 
     @PostMapping("/category")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductDto> createProductWithCategory(@RequestBody Product product,@RequestParam Long categoryId ){
         ProductDto productDto = productService.createProductWithCategory(product,categoryId);
         return new ResponseEntity<>(productDto,HttpStatus.CREATED);
     }
 
     @PutMapping("/assignCategory")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductDto> assignCategoryToProduct(@RequestParam Long productId, @RequestParam Long categoryId){
         ProductDto productDto = productService.assignCategoryToProduct(productId,categoryId);
         return new ResponseEntity<>(productDto,HttpStatus.ACCEPTED);

@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public PageableResponse<UserDto> getAllUsers(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
                                                  @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
                                                  @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
@@ -41,13 +43,9 @@ public class UserController {
         return userService.getUserByEmail(email);
     }
 
-    @PostMapping()
-    public ResponseEntity<UserDto> createUser(@RequestBody User user){
-        UserDto userDto = userService.createUser(user);
-        return new ResponseEntity<>(userDto,HttpStatus.CREATED);
-    }
 
     @DeleteMapping(path="/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable Long id){
         ApiResponseMessage msg =  userService.deleteUser(id);
         return new ResponseEntity<>(msg, HttpStatus.OK);

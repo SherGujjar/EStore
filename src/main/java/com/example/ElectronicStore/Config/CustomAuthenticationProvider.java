@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,12 +23,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String password = authentication.getCredentials().toString();
         String email = authentication.getName();
-
+        String role = authentication.getAuthorities().toString();
+        System.out.println(role);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         User user = this.userRepository.findByEmail(email).orElseThrow(()->new BadCredentialsException("No such user found"));
         if(user==null || !email.equalsIgnoreCase(user.getEmail())){
             throw new BadCredentialsException("Username not found.");
         }
-        if(!password.equalsIgnoreCase(user.getPassword())){
+        if(!bCryptPasswordEncoder.matches(password, user.getPassword())){
             throw new BadCredentialsException("Username not found.");
         }
 

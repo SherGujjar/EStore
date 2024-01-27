@@ -11,11 +11,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 @Configuration
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -42,16 +46,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUser(jwt);
         if(userEmail!=null && SecurityContextHolder.getContext().getAuthentication()==null){
             User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new RuntimeException("No Such user present"));
+            Collection<? extends GrantedAuthority> authorities = getAuthorities(user);
             if(jwtService.isTokenValid(jwt,user)){
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,
                         null,
-                        null
+                        authorities
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
         filterChain.doFilter(request,response);
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities(User user) {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().toString());
+        return List.of(authority);
     }
 }

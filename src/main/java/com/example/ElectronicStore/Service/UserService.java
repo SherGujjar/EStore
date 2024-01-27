@@ -1,7 +1,10 @@
 package com.example.ElectronicStore.Service;
 
 import com.example.ElectronicStore.Dto.UserDto;
+import com.example.ElectronicStore.Entity.Role;
+import com.example.ElectronicStore.Entity.RoleEnum;
 import com.example.ElectronicStore.Entity.User;
+import com.example.ElectronicStore.Repository.RoleRepository;
 import com.example.ElectronicStore.Repository.UserRepository;
 import com.example.ElectronicStore.Utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,15 +36,26 @@ public class UserService {
 
     private final JwtService jwtService;
 
+    private final RoleRepository roleRepository;
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public UserService(UserRepository userRepository,AuthenticationManager authenticationManager,JwtService jwtService){
+    public UserService(UserRepository userRepository,AuthenticationManager authenticationManager,JwtService jwtService,RoleRepository roleRepository){
         this.userRepository  = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.roleRepository  =roleRepository;
     }
 
     public UserDto createUser(User user){
+        if(NullUtils.isNull(user.getRole())){
+            Role defaultRole = roleRepository.findByName(RoleEnum.USER).orElseThrow(() -> new RuntimeException("Default role not found"));
+            user.setRole(defaultRole);
+        }
+        else{
+            Role optionalRole = roleRepository.findByName(user.getRole().getName()).orElseThrow(() -> new RuntimeException("Role '" + user.getRole().getName() + "' not found"));
+           user.setRole(optionalRole);
+        }
         user.setPassword(enCryptPassword(user.getPassword()));
         return mapper.convertValue(userRepository.save(user),UserDto.class);
     }

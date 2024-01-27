@@ -7,6 +7,7 @@ import com.example.ElectronicStore.Utils.ApiResponseMessage;
 import com.example.ElectronicStore.Utils.PageableResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,18 +37,21 @@ public class CategoryController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<CategoryDto> createCategory(@RequestBody Category category){
         CategoryDto categoryDto = categoryService.createCategory(category);
         return new ResponseEntity<>(categoryDto,HttpStatus.CREATED);
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ApiResponseMessage> deleteCategory(@RequestParam Long id){
         ApiResponseMessage apiResponseMessage = categoryService.deleteCategory(id);
         return new ResponseEntity<>(apiResponseMessage,HttpStatus.OK);
     }
 
     @PutMapping(path = "/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto category,@PathVariable Long id){
         CategoryDto categoryDto = categoryService.updateCategory(category,id);
         return new ResponseEntity<>(categoryDto,HttpStatus.ACCEPTED);

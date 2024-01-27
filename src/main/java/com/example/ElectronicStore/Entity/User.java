@@ -5,6 +5,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,10 +29,15 @@ public class User {
     @EmailValidator
     private String email;
     private String password;
-    private String role;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+    private Role role;
 
     @Size(max = 10,message = "Number length should be equla to 10")
     @Size(min = 10, message = "Number length should be equla to 10")
     @Column(unique=true)
     private String number;
+
+
 }

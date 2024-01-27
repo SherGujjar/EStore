@@ -1,5 +1,6 @@
 package com.example.ElectronicStore.Dto;
 
+import com.example.ElectronicStore.Entity.Role;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Null;
 import lombok.*;
@@ -17,5 +18,5 @@ public class UserDto {
     private String name;
     private String email;
     private String number;
-    private String role;
+    private Role role;
 }
