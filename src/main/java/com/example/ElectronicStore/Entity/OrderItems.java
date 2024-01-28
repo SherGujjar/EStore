@@ -16,6 +16,9 @@ public class OrderItems {
     @Column(name = "id", nullable = false)
     private Long id;
     // quantity of each orderItem
+
+    @Version
+    private int version;
     private Integer quantity;
     // price of each orderItem
     private Double price;

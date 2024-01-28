@@ -23,6 +23,9 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
+
     private String name;
     @NotNull
     @Column(unique=true)

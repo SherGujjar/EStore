@@ -19,6 +19,9 @@ public class Cart {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
+
     private int totalQuantity;
     private double amount;
     @OneToOne(fetch = FetchType.EAGER)

@@ -21,6 +21,8 @@ public class Category {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
     @NotNull
     private String title;
     @NotNull

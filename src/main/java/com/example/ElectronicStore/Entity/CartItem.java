@@ -18,6 +18,9 @@ public class CartItem {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;

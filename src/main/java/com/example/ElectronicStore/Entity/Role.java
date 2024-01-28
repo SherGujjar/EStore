@@ -13,6 +13,8 @@ public class Role {
     @Column(nullable = false)
     private Long id;
 
+    @Version
+    private int version;
     @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleEnum name;

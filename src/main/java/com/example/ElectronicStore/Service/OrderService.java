@@ -6,12 +6,14 @@ import com.example.ElectronicStore.Dto.OrderDto;
 import com.example.ElectronicStore.Entity.*;
 import com.example.ElectronicStore.Repository.CartRepository;
 import com.example.ElectronicStore.Repository.OrdersRepository;
+import com.example.ElectronicStore.Repository.ProductRepository;
 import com.example.ElectronicStore.Repository.UserRepository;
 import com.example.ElectronicStore.Utils.ApiResponseMessage;
 import com.example.ElectronicStore.Utils.GenricPageableResponse;
 import com.example.ElectronicStore.Utils.OrderRequestBody;
 import com.example.ElectronicStore.Utils.PageableResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,28 +37,40 @@ public class OrderService {
 
     private OrdersRepository ordersRepository;
 
+    private ProductRepository productRepository;
+
+    private EntityManager entityManager;
+
     private ObjectMapper mapper = new ObjectMapper();
     private final UserRepository userRepository;
 
     public OrderService(CartRepository cartRepository, OrdersRepository ordersRepository,
-                        UserRepository userRepository){
+                        UserRepository userRepository, ProductRepository productRepository){
         this.cartRepository = cartRepository;
         this.ordersRepository = ordersRepository;
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     // create an order
     @Transactional(propagation = Propagation.REQUIRED)
     public OrderDto createNewOrder(OrderRequestBody orderBody){
+        entityManager.getTransaction().begin();
         Orders order = new Orders();
         Long cartId = orderBody.getCartId();
         Cart cart = cartRepository.findById(cartId).orElseThrow(()-> new RuntimeException("No suh cart present"));
         AtomicReference<Double> totalAmount = new AtomicReference<>(0.0);
         List<OrderItems> orderItemsList = cart.getCartItem().stream().map(cartItem->{
             Product product = cartItem.getProduct();
+            Product productDb = productRepository.findById(product.getId()).orElseThrow(() -> new RuntimeException("No Such product presnet"));
             double price = product.getPrice();
             int quantity = cartItem.getQuantity();
+            int stockAvailabel = productDb.getStock();
+            if(quantity>stockAvailabel){
+                throw new RuntimeException("Product out of stock");
+            }
             totalAmount.accumulateAndGet(price*quantity,(a,b)->a+b);
+            productDb.setStock(stockAvailabel-quantity);
             return OrderItems.builder().orders(order).price(price*quantity).quantity(quantity).product(product).build();
         }).collect(Collectors.toList());
 

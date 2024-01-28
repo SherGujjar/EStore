@@ -19,12 +19,16 @@ public class Product {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
     @NotNull
     private String title;
 
     private String description;
 
     private Double price;
+
+    private Integer stock;
 
     @JsonBackReference()
     @ManyToOne(fetch = FetchType.EAGER)

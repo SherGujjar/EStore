@@ -20,6 +20,8 @@ public class Orders {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Version
+    private int version;
     private String orderStatus;
 
     private String billingNumber;
